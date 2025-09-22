@@ -1,4 +1,4 @@
-# SOLARM – Smart Irrigation & Motion Detection System
+# SOLARM
 
 ## Overview
 **SOLARM** is an ESP8266-based smart irrigation and security system integrated with the **Blynk app**.  
