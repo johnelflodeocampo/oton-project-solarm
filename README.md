@@ -74,7 +74,6 @@ http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 ### 4. Connect Hardware
 - Follow the **Pin Configuration** table in this README.  
-- Ensure external power supply for servo and relay if needed.
 
 ### 5. Configure the Sketch
 - Open `sketch_sep22a.ino` in Arduino IDE.  
