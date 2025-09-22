@@ -50,20 +50,69 @@ It monitors soil moisture, controls a relay for watering, detects motion with a 
 - **Arduino IDE** (latest version recommended)  
 - **Blynk Library** (Classic Blynk)  
 - **ESP8266 Board Package** installed via Board Manager  
-- **Servo Library** (Arduino built-in)  
+- **Servo Library** (Arduino built-in)
 
 ---
 
-## Blynk IoT Template Details
-Before uploading the code, fill in your **Blynk IoT template credentials**:
+## Installation Instructions
 
+### 1. Install Arduino IDE
+Download and install the Arduino IDE from [Arduino.cc](https://www.arduino.cc/en/software).
+
+### 2. Add ESP8266 Board Package
+1. Open Arduino IDE → **File → Preferences → Additional Board Manager URLs**  
+2. Add the following URL:  
+http://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+3. Go to **Tools → Board → Boards Manager**, search for **ESP8266**, and click **Install**.
+
+### 3. Install Required Libraries
+1. In Arduino IDE, go to **Sketch → Include Library → Manage Libraries**.  
+2. Search and install the following libraries:  
+- **Blynk**  
+- **Servo** (usually built-in)
+
+### 4. Connect Hardware
+- Follow the **Pin Configuration** table in this README.  
+- Ensure external power supply for servo and relay if needed.
+
+### 5. Configure the Sketch
+- Open `sketch_sep22a.ino` in Arduino IDE.  
+- Replace placeholders with your WiFi and Blynk credentials:  
 ```cpp
-#define BLYNK_TEMPLATE_ID   "TMPLxxxxxxxxxxx" // Replace with your Blynk Template ID
-#define BLYNK_TEMPLATE_NAME "SOLARM"          // Replace with your Template Name
-#define BLYNK_AUTH_TOKEN    "YourAuthToken"   // Replace with your Device Auth Token
+char ssid[] = "YOUR_WIFI_SSID";
+char pass[] = "YOUR_WIFI_PASSWORD";
+#define BLYNK_TEMPLATE_ID   "TMPLxxxxxxxxxxx"
+#define BLYNK_TEMPLATE_NAME "SOLARM"
+#define BLYNK_AUTH_TOKEN    "YourAuthToken"
+```
 
-char ssid[] = "YOUR_WIFI_SSID";             // Replace with your WiFi SSID
-char pass[] = "YOUR_WIFI_PASSWORD";         // Replace with your WiFi password
+### 6. Select Board and Port
+- Go to **Tools → Board** and select your ESP8266 model.  
+- Go to **Tools → Port** and select the correct COM port.
+
+### 7. Upload the Sketch
+- Click **Upload** in Arduino IDE.  
+- Wait for compilation and flashing to complete.
+
+### 8. Set Up Blynk App Project
+1. Create a project in the Blynk app using your template.  
+2. Add widgets for virtual pins:  
+   - **V0** → Soil Moisture Display  
+   - **V1** → Relay Status LED  
+   - **V2** → Motion Detection LED  
+   - **V3** → Relay Control Button  
+   - **V4** → Watering Notification  
+   - **V5** → Motion Notification  
+   - **V6** → Servo Activation Notification
+
+### 9. Power Up and Test
+- The ESP8266 will automatically connect to WiFi and Blynk.  
+- Verify that the relay, motion detection, and notifications are working as expected.
+
+
+---
+
 
 
 
