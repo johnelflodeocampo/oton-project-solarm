@@ -1,4 +1,4 @@
-# SOLARM
+# SOLARM – Smart Irrigation & Motion Detection System
 
 ## Overview
 **SOLARM** is an ESP8266-based smart irrigation and security system integrated with the **Blynk app**.  
@@ -54,20 +54,16 @@ It monitors soil moisture, controls a relay for watering, detects motion with a 
 
 ---
 
-## Installation Instructions
-1. Install **Arduino IDE** and add the ESP8266 board package:
-   - Go to **File → Preferences → Additional Board Manager URLs** and add:  
-     ```
-     http://arduino.esp8266.com/stable/package_esp8266com_index.json
-     ```
-   - Tools → Board → Boards Manager → Search for **ESP8266** → Install  
-2. Install libraries via **Sketch → Include Library → Manage Libraries**:  
-   - **Blynk**  
-   - **Servo**  
-3. Connect hardware as per the **Pin Configuration**.  
-4. Open `sketch_sep22a.ino` in Arduino IDE.  
-5. Update the WiFi and Blynk credentials in the code:  
-   ```cpp
-   char auth[] = "YOUR_BLYNK_AUTH_TOKEN";
-   char ssid[] = "YOUR_WIFI_SSID";
-   char pass[] = "YOUR_WIFI_PASSWORD";
+## Blynk IoT Template Details
+Before uploading the code, fill in your **Blynk IoT template credentials**:
+
+```cpp
+#define BLYNK_TEMPLATE_ID   "TMPLxxxxxxxxxxx" // Replace with your Blynk Template ID
+#define BLYNK_TEMPLATE_NAME "SOLARM"          // Replace with your Template Name
+#define BLYNK_AUTH_TOKEN    "YourAuthToken"   // Replace with your Device Auth Token
+
+char ssid[] = "YOUR_WIFI_SSID";             // Replace with your WiFi SSID
+char pass[] = "YOUR_WIFI_PASSWORD";         // Replace with your WiFi password
+
+
+
