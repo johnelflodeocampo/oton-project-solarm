@@ -16,23 +16,28 @@ char pass[] = "YOUR_WIFI_PASSWORD";    // WiFi Password
 // ====================
 // Pin Definitions
 // ====================
-const int SOIL_PIN    = A0;   // Soil sensor connected to A0
-const int RELAY_PIN   = D7;   // Relay connected to D7
-const int PIR_PIN     = D1;   // PIR motion sensor
-const int BUZZER_PIN  = D5;   // Buzzer
-const int SERVO_PIN   = D6;   // Continuous rotation servo
+const int SOIL_PIN    = A0;
+const int RELAY_PIN   = D7;
+const int PIR_PIN     = D1;
+const int BUZZER_PIN  = D5;
+const int SERVO_PIN   = D6;
 
 Servo myServo;
 
 // ====================
 // Variables
 // ====================
-bool lowMoistureNotified = false; // prevent repeated low moisture notifications
-bool motorNotified = false;       // prevent repeated motor notifications
-unsigned long lastSensorUpdate = 0; // for non-blocking timing
+bool lowMoistureNotified = false;
+bool motorNotified = false;
+unsigned long lastSensorUpdate = 0;
 unsigned long lastMotionTime = 0;
-const unsigned long SENSOR_INTERVAL = 1000; // update every 1 second
-const unsigned long SERVO_DURATION  = 1000; // 1 second per rotation
+const unsigned long SENSOR_INTERVAL = 1000;
+const unsigned long SERVO_DURATION  = 1000;
+
+// ====================
+// Blynk Terminal
+// ====================
+WidgetTerminal terminal(V10); // Terminal widget on V10
 
 // ====================
 // Blynk Relay Control
@@ -40,6 +45,8 @@ const unsigned long SERVO_DURATION  = 1000; // 1 second per rotation
 BLYNK_WRITE(V3) {
   int relayCmd = param.asInt(); // 1=ON, 0=OFF
   digitalWrite(RELAY_PIN, relayCmd);
+  terminal.println(String("Relay manually set to: ") + relayCmd);
+  terminal.flush();
 }
 
 // ====================
@@ -48,9 +55,6 @@ BLYNK_WRITE(V3) {
 void setup() {
   Serial.begin(115200);
   delay(1000);
-
-  Serial.println("=== SOLARM ===");
-  Serial.println("System Starting...");
 
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, LOW);
@@ -63,8 +67,11 @@ void setup() {
   myServo.attach(SERVO_PIN);
   myServo.write(90); // stop continuous rotation
 
-  Serial.println("Relay, PIR, Buzzer, Servo, and Soil Sensor Ready");
-  Serial.println("=========================");
+  Serial.println("=== SOLARM ===");
+  terminal.println("=== SOLARM ===");
+  Serial.println("System Starting...");
+  terminal.println("System Starting...");
+  terminal.flush();
 
   Blynk.begin(auth, ssid, pass);
 }
@@ -81,29 +88,36 @@ void loop() {
   if (currentMillis - lastSensorUpdate >= SENSOR_INTERVAL) {
     lastSensorUpdate = currentMillis;
 
-    int sensorValue = analogRead(SOIL_PIN); // raw ADC 0-1023
+    int sensorValue = analogRead(SOIL_PIN);
     int moisturePercent = map(sensorValue, 1023, 0, 0, 100);
 
-    Serial.print("Moisture: ");
-    Serial.print(moisturePercent);
-    Serial.println("%");
+    String msg = "Moisture: " + String(moisturePercent) + "%";
+    Serial.println(msg);
+    terminal.println(msg);
+    terminal.flush();
 
-    Blynk.virtualWrite(V0, moisturePercent); // send moisture to Blynk
+    Blynk.virtualWrite(V0, moisturePercent);
 
     // Relay control based on moisture
     if (moisturePercent < 41) {
       digitalWrite(RELAY_PIN, HIGH);
       Serial.println("Relay ON - Watering");
+      terminal.println("Relay ON - Watering");
+      terminal.flush();
       Blynk.virtualWrite(V1, 1);
 
       if (!lowMoistureNotified) {
-        Blynk.virtualWrite(V4, 1); // trigger notification in Blynk app
-        Blynk.virtualWrite(V4, 0); // reset
+        Blynk.virtualWrite(V4, 1);
+        Blynk.virtualWrite(V4, 0);
         lowMoistureNotified = true;
+        terminal.println("Notification: Low soil moisture");
+        terminal.flush();
       }
     } else {
       digitalWrite(RELAY_PIN, LOW);
       Serial.println("Relay OFF");
+      terminal.println("Relay OFF");
+      terminal.flush();
       Blynk.virtualWrite(V1, 0);
       lowMoistureNotified = false;
     }
@@ -112,40 +126,36 @@ void loop() {
   // --- PIR Motion Detection ---
   int motionDetected = digitalRead(PIR_PIN);
 
-  if (motionDetected == HIGH && currentMillis - lastMotionTime >= 3000) { // avoid repeated events
+  if (motionDetected == HIGH && currentMillis - lastMotionTime >= 3000) {
     lastMotionTime = currentMillis;
+
     Serial.println("Motion Detected!");
+    terminal.println("Motion Detected!");
+    terminal.flush();
+
     Blynk.virtualWrite(V2, 1);
+    Blynk.virtualWrite(V5, 1);
+    Blynk.virtualWrite(V5, 0);
 
-    // Trigger Blynk notification via virtual pin
-    Blynk.virtualWrite(V5, 1); // Motion detected
-    Blynk.virtualWrite(V5, 0); // reset
-
-    // Servo motor notification
     if (!motorNotified) {
-      Blynk.virtualWrite(V6, 1); // Servo activated
+      Blynk.virtualWrite(V6, 1);
       Blynk.virtualWrite(V6, 0);
       motorNotified = true;
+      terminal.println("Servo Activated!");
+      terminal.flush();
     }
 
-    // Activate buzzer
     digitalWrite(BUZZER_PIN, HIGH);
-
-    // Rotate servo forward
-    myServo.write(0);   // full speed CW
+    myServo.write(0);   // CW
     delay(SERVO_DURATION);
-
-    // Rotate servo backward
-    myServo.write(180); // full speed CCW
+    myServo.write(180); // CCW
     delay(SERVO_DURATION);
-
-    // Stop servo
-    myServo.write(90);
+    myServo.write(90);  // Stop
     digitalWrite(BUZZER_PIN, LOW);
   }
 
   if (motionDetected == LOW) {
     Blynk.virtualWrite(V2, 0);
-    motorNotified = false; // reset motor notification
+    motorNotified = false;
   }
 }
