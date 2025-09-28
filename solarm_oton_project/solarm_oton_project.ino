@@ -17,10 +17,10 @@ char pass[] = "YOUR_WIFI_PASSWORD";    // WiFi Password
 // Pin Definitions
 // ====================
 const int SOIL_PIN    = A0;
-const int RELAY_PIN   = D7;
-const int PIR_PIN     = D1;
-const int BUZZER_PIN  = D5;
-const int SERVO_PIN   = D6;
+const int RELAY_PIN   = 13;
+const int PIR_PIN     = 5;
+const int BUZZER_PIN  = 14;
+const int SERVO_PIN   = 4;
 
 Servo myServo;
 
